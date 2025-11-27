@@ -1,4 +1,58 @@
 from flask_restful import Resource, reqparse
+from services.auth_services import AuthService
+from services.product_service import ProductService
+from repositories.product_repository import ProductRepository
+from utils.database_connection import DatabaseConnection
+
+class ProductsResource(Resource):
+    def __init__(self):
+        self.auth = AuthService()
+        db = DatabaseConnection("db.json")
+        repo = ProductRepository(db)
+        self.service = ProductService(repo)
+
+    def get(self):
+        token = request.headers.get("Authorization")
+        if not self.auth.is_valid(token):
+            return {"error": "Invalid token"}, 401
+
+        parser = reqparse.RequestParser()
+        parser.add_argument("category", required=False)
+        args = parser.parse_args()
+
+        products = self.service.list_products(args["category"])
+
+        return {"products": products}, 200
+
+    def post(self):
+        token = request.headers.get("Authorization")
+        if not self.auth.is_valid(token):
+            return {"error": "Invalid token"}, 401
+
+        parser = reqparse.RequestParser()
+        parser.add_argument("id", type=int, required=True)
+        parser.add_argument("name", required=True)
+        parser.add_argument("category", required=True)
+        args = parser.parse_args()
+
+        new_product = self.service.create_product(args)
+
+        return {"message": "Product added", "product": new_product}, 201
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+from flask_restful import Resource, reqparse
 import json
 from flask import request
 from utils.database_connection import DatabaseConnection
@@ -57,5 +111,9 @@ class ProductsResource(Resource):
         self.products.append(new_product)
         self.db.add_product(new_product)
         return {'mensaje': 'Product added', 'product': new_product}, 201
+
+"""
+
+
 
 

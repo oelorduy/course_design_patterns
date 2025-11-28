@@ -1,3 +1,4 @@
+from flask import request
 from flask_restful import Resource, reqparse
 from services.auth_services import AuthService
 from services.product_service import ProductService
@@ -7,45 +8,54 @@ from utils.database_connection import DatabaseConnection
 class ProductsResource(Resource):
     def __init__(self):
         self.auth = AuthService()
+
+        # Conectar correctamente la base de datos
         db = DatabaseConnection("db.json")
+        db.connect()
+
         repo = ProductRepository(db)
         self.service = ProductService(repo)
 
-    def get(self):
-        token = request.headers.get("Authorization")
-        if not self.auth.is_valid(token):
-            return {"error": "Invalid token"}, 401
+    # -----------------------
+    #   GET /products
+    #   GET /products/<id>
+    #   GET /products?category=women
+    # -----------------------
+    def get(self, product_id=None):
 
-        parser = reqparse.RequestParser()
-        parser.add_argument("category", required=False)
-        args = parser.parse_args()
+        # Caso 1: GET /products/<id>
+        if product_id is not None:
+            product = self.service.get_product_by_id(product_id)
+            if product:
+                return product, 200
+            return {"error": "Product not found"}, 404
 
-        products = self.service.list_products(args["category"])
+        # Caso 2: GET /products
+        products = self.service.get_all_products()
 
-        return {"products": products}, 200
+        # Soporte para /products?category=women
+        category = request.args.get("category")
+        if category:
+            products = [p for p in products if p.get("category") == category]
 
+        return products, 200
+
+    # -----------------------
+    #   POST /products
+    # -----------------------
     def post(self):
         token = request.headers.get("Authorization")
+
         if not self.auth.is_valid(token):
             return {"error": "Invalid token"}, 401
 
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=int, required=True)
         parser.add_argument("name", required=True)
         parser.add_argument("category", required=True)
         args = parser.parse_args()
 
         new_product = self.service.create_product(args)
-
         return {"message": "Product added", "product": new_product}, 201
-
-
-
-
-
-
-
-
 
 
 

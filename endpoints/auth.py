@@ -14,7 +14,7 @@ class AuthenticationResource(Resource):
 
         # Lógica simple de login
         if username == 'student' and password == 'desingp':
-            token = "abcd1234"   # Debe coincidir con AuthService
+            token = "abcd1234"  
             return {"token": token}, 200
         else:
             return {"message": "unauthorized"}, 401

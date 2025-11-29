@@ -1,71 +1,55 @@
-from flask_restful import Resource, reqparse
-import json
 from flask import request
+from flask_restful import Resource, reqparse
 from utils.database_connection import DatabaseConnection
-
-def is_valid_token(token):
-    return token == 'abcd1234'
-
+from services.auth_services import AuthService
+from services.favorite_service import FavoriteService
+from repositories.favorite_repository import FavoriteRepository
 
 class FavoritesResource(Resource):
     def __init__(self):
-        self.db = DatabaseConnection('favorites.json')
-        self.db.connect()
+        # Servicio de autenticación
+        self.auth = AuthService()
 
-        self.favorites = self.db.get_favorites()
+        # Base de datos
+        db = DatabaseConnection("db.json")
+        db.connect()
 
-    def get(self):
-        token = request.headers.get('Authorization')
-        
-        if not token:
-            return {'message': 'Unauthorized access token not found'}, 401
+        # Repository → Service
+        repo = FavoriteRepository(db)
+        self.service =FavoriteService(repo)
 
-        if not is_valid_token(token):
-            return {'message': 'Unauthorized invalid token'}, 401
+        # Parser para POST y PUT
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("name", type=str, required=True, help="Field 'name' is required")
 
-        return self.db.get_favorites(), 200
+# =======================================================
+    # GET /favorites
+    # GET /favorites/<id>
+    # GET /favorites?name=xxxxxx
+    # =======================================================
+    def get(self, favorite_id=None):
 
-    def post(self):
-        token = request.headers.get('Authorization')
-        parser = reqparse.RequestParser()
-        parser.add_argument('user_id', type=int, required=True, help='User ID')
-        parser.add_argument('product_id', type=int, required=True, help='Product ID')
-        if not token:
-            return { 'message': 'Unauthorized acces token not found'}, 401
+        # Validación del token
+        token = request.headers.get("Authorization")
+        if not self.auth.is_valid(token):
+            return {"error": "Unauthorized"}, 401
 
-        if not is_valid_token(token):
-           return { 'message': 'Unauthorized invalid token'}, 401
+        # GET /favorite/<id>
+        if favorite_id is not None:
+            favorite = self.service.get_favorite_by_id(favorite_id)
+            if favorite:
+                return favorite, 200
+            return {"error": "Favorite not found"}, 404
 
+        # GET /favorites
+        favorites = self.service.get_all_favorites()
 
-        args = parser.parse_args()
-        new_favorite = {
-            'user_id': args['user_id'],
-            'product_id': args['product_id']
-        }
+        # Filtro opcional ?name=xxxxx
+        filter_name = request.args.get("name")
+        if filter_name:
+            favorites = [
+                c for c in favorites
+                if c["name"].lower() == filter_name.lower()
+            ]
 
-        self.favorites.append(new_favorite)
-        self.db.add_favorite(new_favorite)
-        return {'message': 'Product added to favorites', 'favorite': new_favorite}, 201
-
-    def delete(self):
-        token = request.headers.get('Authorization')
-        if not token:
-            return { 'message': 'Unauthorized acces token not found'}, 401
-
-        if not is_valid_token(token):
-           return { 'message': 'Unauthorized invalid token'}, 401
-
-        parser = reqparse.RequestParser()
-        parser.add_argument('user_id', type=int, required=True, help='User ID')
-        parser.add_argument('product_id', type=int, required=True, help='Product ID')
-
-        args = parser.parse_args()
-        user_id = args['user_id']
-        product_id = args['product_id']
-
-        # Encuentra y elimina el producto de favoritos
-        self.favorites = [favorite for favorite in self.favorites
-                          if not (favorite['user_id'] == user_id and favorite['product_id'] == product_id)]
-        self.db.save_favorites(self.favorites)
-
-        return {'message': 'Product removed from favorites'}, 200
+        return favorites, 200

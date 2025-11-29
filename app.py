@@ -18,7 +18,7 @@ api.add_resource(ProductsResource, '/products', '/products/<int:product_id>')
 
 api.add_resource(CategoriesResource, '/categories','/categories/<int:category_id>')
 
-api.add_resource(FavoritesResource, '/favorites')
+api.add_resource(FavoritesResource, '/favorites','/favorites/<int:favorite_id>')
 
 if __name__ == '__main__':
     app.run(debug=True)

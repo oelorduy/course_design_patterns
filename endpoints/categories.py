@@ -24,7 +24,7 @@ class CategoriesResource(Resource):
         self.parser.add_argument("name", type=str, required=True, help="Field 'name' is required")
 
     # =======================================================
-    # GET /categories
+    # GET /categories///
     # GET /categories/<id>
     # GET /categories?name=Women
     # =======================================================

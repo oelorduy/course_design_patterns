@@ -160,6 +160,29 @@
             "name": "Gorra",
             "category": "kids",
             "id": 26
+        },
+        {
+            "name": "Gorra",
+            "category": "kids",
+            "id": 27
+        },
+        {
+            "name": "Gorra",
+            "category": "kids",
+            "price": 10.0,
+            "id": 28
+        },
+        {
+            "name": "Gorra",
+            "category": "kids",
+            "price": 10.0,
+            "id": 29
+        },
+        {
+            "name": "Gorra",
+            "category": "kids",
+            "price": 10.0,
+            "id": 30
         }
     ],
     "categories": [
@@ -178,30 +201,6 @@
         {
             "id": 4,
             "name": "girls"
-        },
-        {
-            "id": 5,
-            "name": "invierno"
-        },
-        {
-            "id": 5,
-            "name": "invierno"
-        },
-        {
-            "id": 7,
-            "name": "invierno"
-        },
-        {
-            "id": 7,
-            "name": "invierno"
-        },
-        {
-            "id": 9,
-            "name": "invierno"
-        },
-        {
-            "id": 9,
-            "name": "invierno"
         }
     ],
     "favorites": []

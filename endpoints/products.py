@@ -9,54 +9,59 @@ class ProductsResource(Resource):
     def __init__(self):
         self.auth = AuthService()
 
-        # Conectar correctamente la base de datos
         db = DatabaseConnection("db.json")
         db.connect()
 
         repo = ProductRepository(db)
         self.service = ProductService(repo)
 
-    # -----------------------
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument("name", required=True)
+        self.parser.add_argument("category", required=True)
+        self.parser.add_argument("price", type=float, required=False)
+
+    # =======================================================
     #   GET /products
     #   GET /products/<id>
     #   GET /products?category=women
-    # -----------------------
+    # =======================================================
     def get(self, product_id=None):
 
-        # Caso 1: GET /products/<id>
+        # VALIDACIÓN DEL TOKEN
+        token = request.headers.get("Authorization")
+        if not self.auth.is_valid(token):
+            return {"error": "Unauthorized"}, 401
+
+        # GET /products/<id>
         if product_id is not None:
             product = self.service.get_product_by_id(product_id)
             if product:
                 return product, 200
             return {"error": "Product not found"}, 404
 
-        # Caso 2: GET /products
+        # GET /products
         products = self.service.get_all_products()
 
-        # Soporte para /products?category=women
+        # Filtro opcional ?category=women
         category = request.args.get("category")
         if category:
             products = [p for p in products if p.get("category") == category]
 
         return products, 200
 
-    # -----------------------
+    # =======================================================
     #   POST /products
-    # -----------------------
+    # =======================================================
     def post(self):
+
         token = request.headers.get("Authorization")
-
         if not self.auth.is_valid(token):
-            return {"error": "Invalid token"}, 401
+            return {"error": "Unauthorized"}, 401
 
-        parser = reqparse.RequestParser()
-        parser.add_argument("name", required=True)
-        parser.add_argument("category", required=True)
-        args = parser.parse_args()
+        args = self.parser.parse_args()
 
         new_product = self.service.create_product(args)
         return {"message": "Product added", "product": new_product}, 201
-
 
 
 

@@ -183,6 +183,12 @@
             "category": "kids",
             "price": 10.0,
             "id": 30
+        },
+        {
+            "name": "Gorra",
+            "category": "kids",
+            "price": 10.0,
+            "id": 31
         }
     ],
     "categories": [

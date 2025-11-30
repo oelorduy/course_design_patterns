@@ -189,6 +189,12 @@
             "category": "kids",
             "price": 10.0,
             "id": 31
+        },
+        {
+            "name": "Gorra",
+            "category": "kids",
+            "price": 10.0,
+            "id": 32
         }
     ],
     "categories": [
@@ -207,11 +213,6 @@
         {
             "id": 4,
             "name": "girls"
-        },
-        {
-            "id": 5,
-            "name": "oto\u00f1o",
-            "created_at": "2025-11-29T15:35:36.060289Z"
         }
     ],
     "favorites": []

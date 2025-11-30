@@ -1,3 +1,5 @@
+from factories.product_factory import ProductFactory
+
 class ProductService:
     def __init__(self, repository):
         self.repository = repository
@@ -9,27 +11,22 @@ class ProductService:
         return self.repository.get_by_id(product_id)
 
     def create_product(self, product_data):
-        # -----------------------
-        # 1. Obtener productos actuales
-        # -----------------------
+        # 1. Normalizar usando Factory
+        product = ProductFactory.create(product_data)
+
+        # 2. Obtener productos actuales
         products = self.repository.get_all()
 
-        # -----------------------
-        # 2. Generar ID automático
-        # -----------------------
+        # 3. Generar ID automático
         new_id = max([p["id"] for p in products], default=0) + 1
-        product_data["id"] = new_id
+        product["id"] = new_id
 
-        # -----------------------
-        # 3. Validación opcional
-        # -----------------------
-        if "name" not in product_data or "category" not in product_data:
+        # 4. Validación simple
+        if not product["name"] or not product["category"]:
             return {"error": "Missing 'name' or 'category' field"}, 400
-        
-        # -----------------------
-        # 4. Guardar producto
-        # -----------------------
-        return self.repository.add(product_data)
+
+        # 5. Guardar producto
+        return self.repository.add(product)
 
     def update_product(self, product_id, new_data):
         return self.repository.update(product_id, new_data)

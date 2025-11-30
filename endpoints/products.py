@@ -60,5 +60,5 @@ class ProductsResource(Resource):
 
         args = self.parser.parse_args()
 
-        new_product = self.service.create_product(args)
-        return {"message": "Product added", "product": new_product}, 201
+        created = self.service.create_product(args)
+        return created, 201

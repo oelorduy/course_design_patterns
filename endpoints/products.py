@@ -9,8 +9,8 @@ class ProductsResource(Resource):
     def __init__(self):
         self.auth = AuthService()
 
-        db = DatabaseConnection("db.json")
-        db.connect()
+        db = DatabaseConnection()
+        #db.connect()
 
         repo = ProductRepository(db)
         self.service = ProductService(repo)
@@ -23,7 +23,7 @@ class ProductsResource(Resource):
     # =======================================================
     #   GET /products
     #   GET /products/<id>
-    #   GET /products?category=women
+    #   GET /products?category=xxxx
     # =======================================================
     def get(self, product_id=None):
 
@@ -42,7 +42,7 @@ class ProductsResource(Resource):
         # GET /products
         products = self.service.get_all_products()
 
-        # Filtro opcional ?category=women
+        # Filtro opcional ?category=xxxxxx
         category = request.args.get("category")
         if category:
             products = [p for p in products if p.get("category") == category]

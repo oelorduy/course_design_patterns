@@ -12,9 +12,8 @@ class CategoriesResource(Resource):
         self.auth = AuthService()
 
         # Base de datos
-        db = DatabaseConnection("db.json")
-        db.connect()
-
+        db = DatabaseConnection()
+       
         # Repository → Service
         repo = CategoryRepository(db)
         self.service = CategoryService(repo)

@@ -12,9 +12,8 @@ class FavoritesResource(Resource):
         self.auth = AuthService()
 
         # Base de datos
-        db = DatabaseConnection("db.json")
-        db.connect()
-
+        db = DatabaseConnection()
+       
         # Repository → Service
         repo = FavoriteRepository(db)
         self.service = FavoriteService(repo)

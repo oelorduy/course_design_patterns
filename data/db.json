@@ -207,6 +207,18 @@
             "price": 12.0,
             "category": "kids",
             "id": 34
+        },
+        {
+            "name": "Gorra new",
+            "price": 12.0,
+            "category": "kids",
+            "id": 35
+        },
+        {
+            "name": "Gorra new",
+            "price": 12.0,
+            "category": "kids",
+            "id": 36
         }
     ],
     "categories": [
@@ -235,6 +247,14 @@
         {
             "id": 2,
             "name": "Gorra new2"
+        },
+        {
+            "id": 3,
+            "name": "Gorra new3"
+        },
+        {
+            "id": 4,
+            "name": "Gorra new3"
         }
     ]
 }
